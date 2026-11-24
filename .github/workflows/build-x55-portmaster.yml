@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies & Build Web App (dist/)
         run: |
-          npm install
+          npm install --legacy-peer-deps
           npm run build
 
       - name: Download Electron ARM64 (aarch64) Runtime & Assemble PortMaster Folder
@@ -28,6 +28,7 @@ jobs:
           set -e
           mkdir -p out/x55-folio/books out/x55-folio/userdata
 
+          # Lấy bản Electron linux-arm64 mới nhất (chạy trực tiếp trên ROCKNIX RK3566)
           ELECTRON_URL=$(curl -sL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/electron/electron/releases/latest \
             | grep -oE 'https://[^"]+electron-v[0-9]+\.[0-9]+\.[0-9]+-linux-arm64\.zip' \
@@ -39,19 +40,23 @@ jobs:
           curl -fL "$ELECTRON_URL" -o electron-arm64.zip
           unzip -q electron-arm64.zip -d out/x55-folio
 
+          # Đổi tên file chạy để khớp với script PortMaster
           mv out/x55-folio/electron out/x55-folio/x55-folio
           chmod +x out/x55-folio/x55-folio
 
+          # Nhúng app React đã build + wrapper Electron vào resources/app
           mkdir -p out/x55-folio/resources/app
           cp electron/package.json out/x55-folio/resources/app/
           cp electron/main.js out/x55-folio/resources/app/
           cp electron/preload.js out/x55-folio/resources/app/
           cp -r dist out/x55-folio/resources/app/dist
 
+          # Thêm script PortMaster & port.json
           cp "portmaster/X55 Folio.sh" "out/X55 Folio.sh"
           chmod +x "out/X55 Folio.sh"
           cp portmaster/port.json out/x55-folio/port.json
 
+          # Nén thành 1 file ZIP duy nhất sẵn sàng chép vào /roms/ports/
           (cd out && zip -rq ../X55_Folio_PortMaster_ARM64.zip "X55 Folio.sh" x55-folio)
 
       - name: Upload X55_Folio_PortMaster_ARM64.zip
