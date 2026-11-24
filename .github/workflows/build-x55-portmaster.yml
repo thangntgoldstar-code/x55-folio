@@ -1,0 +1,62 @@
+name: Build X55 PortMaster ZIP (ARM64)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build-x55-portmaster:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies & Build Web App (dist/)
+        run: |
+          npm install
+          npm run build
+
+      - name: Download Electron ARM64 (aarch64) Runtime & Assemble PortMaster Folder
+        run: |
+          set -e
+          mkdir -p out/x55-folio/books out/x55-folio/userdata
+
+          ELECTRON_URL=$(curl -sL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/electron/electron/releases/latest \
+            | grep -oE 'https://[^"]+electron-v[0-9]+\.[0-9]+\.[0-9]+-linux-arm64\.zip' \
+            | head -n 1)
+          if [ -z "$ELECTRON_URL" ]; then
+            ELECTRON_URL="https://github.com/electron/electron/releases/download/v34.3.0/electron-v34.3.0-linux-arm64.zip"
+          fi
+          echo "Downloading: $ELECTRON_URL"
+          curl -fL "$ELECTRON_URL" -o electron-arm64.zip
+          unzip -q electron-arm64.zip -d out/x55-folio
+
+          mv out/x55-folio/electron out/x55-folio/x55-folio
+          chmod +x out/x55-folio/x55-folio
+
+          mkdir -p out/x55-folio/resources/app
+          cp electron/package.json out/x55-folio/resources/app/
+          cp electron/main.js out/x55-folio/resources/app/
+          cp electron/preload.js out/x55-folio/resources/app/
+          cp -r dist out/x55-folio/resources/app/dist
+
+          cp "portmaster/X55 Folio.sh" "out/X55 Folio.sh"
+          chmod +x "out/X55 Folio.sh"
+          cp portmaster/port.json out/x55-folio/port.json
+
+          (cd out && zip -rq ../X55_Folio_PortMaster_ARM64.zip "X55 Folio.sh" x55-folio)
+
+      - name: Upload X55_Folio_PortMaster_ARM64.zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: X55_Folio_PortMaster_ARM64
+          path: X55_Folio_PortMaster_ARM64.zip
+          retention-days: 90
