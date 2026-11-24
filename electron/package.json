@@ -1,0 +1,7 @@
+{
+  "name": "x55-folio-reader",
+  "version": "1.0.0",
+  "description": "Offline EPUB & PDF Reader for Powkiddy X55 (ROCKNIX / PortMaster)",
+  "main": "main.js",
+  "private": true
+}

@@ -1,0 +1,26 @@
+{
+  "version": 3,
+  "name": "x55-folio.zip",
+  "items": [
+    "X55 Folio.sh",
+    "x55-folio/"
+  ],
+  "items_opt": null,
+  "attr": {
+    "title": "X55 Folio Reader",
+    "porter": "X55 Community",
+    "desc": "Offline EPUB & PDF Reader with 3D Page Flip, Smart PDF Crop/Zoom, Night Mode, and Full X55 Controls.",
+    "inst": "Copy your .pdf and .epub files into /roms/books/ (or /roms/ports/x55-folio/books/) via ROCKNIX Wi-Fi.",
+    "genres": [
+      "utility"
+    ],
+    "image": null,
+    "rtr": true,
+    "exp": false,
+    "runtime": null,
+    "reqs": [],
+    "arch": [
+      "aarch64"
+    ]
+  }
+}

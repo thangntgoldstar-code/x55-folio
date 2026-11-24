@@ -1,0 +1,6 @@
+{
+  "name": "X55 Folio",
+  "description": "Trình đọc sách EPUB & PDF offline tối ưu cho máy chơi game cầm tay Powkiddy X55 (ROCKNIX / PortMaster) với phím vật lý, lật trang 3D, thu phóng PDF thông minh và chế độ ban đêm.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
